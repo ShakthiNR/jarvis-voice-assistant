@@ -6,12 +6,27 @@ import subprocess
 import sys
 import pywhatkit 
 
+import pyautogui
+
+import datetime
+import time
+import vlc
+currentTime = datetime.datetime.now()
+currentTime.hour
+
 from helper import *
 
-engine = pyttsx3.init()
-voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[4].id)
+#/usr/bin/python3 -m pip install --user python-vlc  
 
+engine = pyttsx3.init()
+
+voices = engine.getProperty('voices')
+# newVoiceRate = 150
+# engine.setProperty('rate',newVoiceRate)
+# engine.setProperty('voice', voices[0].id)
+engine.setProperty('voice', 'com.apple.speech.synthesis.voice.Alex') 
+
+ 
 recognizer  = sr.Recognizer() 
 
 def speak(text):
@@ -23,7 +38,7 @@ def open_software(software_name):
     if 'chrome' in software_name:
         speak('Opening Chrome...')
         chrome_path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-        if is_chrome_running():
+        if is_app_running("chrome"):
             speak('Chrome is already running!')
             url = 'https://www.google.com'
             subprocess.run(['open', '-a', 'Google Chrome', url])
@@ -31,11 +46,18 @@ def open_software(software_name):
         else:
             speak("New chrome opened!")
             subprocess.Popen([chrome_path])
+    
+    elif 'brave browser' in software_name:
+        speak('Opening Brave browser...')
+        path = "/Applications/Brave Browser.app/Contents/MacOS/Brave"
+        if is_app_running("brave"):
+            speak('Brave browser is already running!')
+            url = 'https://www.google.com'
+            subprocess.run(['open', '-a', 'Brave Browser', url])
 
-    # elif 'microsoft edge' in software_name:
-    #     speak('Opening Microsoft Edge...')
-    #     program = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-    #     subprocess.Popen([program])
+        else:
+            speak("New brave browser opened!")
+            subprocess.Popen([path])
 
     elif 'play' in software_name:
         b='Opening Youtube'
@@ -45,7 +67,8 @@ def open_software(software_name):
 
     # elif 'notepad' in software_name:
     #     speak('Opening Notepad...')
-    #     subprocess.Popen(['notepad.exe']) 
+    #     subprocess.Popen(['notepad.exe'])
+     
     # elif 'calculator' in software_name:
     #     speak('Opening Calculator...')
     #     subprocess.Popen(['calc.exe'])
@@ -57,13 +80,10 @@ def close_software(software_name):
         speak('Closing Chrome...')
         close_app('chrome')
 
-    # elif 'microsoft edge' in software_name:
-    #     speak('Closing Microsoft Edge...')
-    #     os.system("taskkill /f /im msedge.exe")
-
     # elif 'notepad' in software_name:
     #     speak('Closing Notepad...')
     #     os.system("taskkill /f /im notepad.exe")
+    
     # elif 'calculator' in software_name:
     #     speak('Closing Calculator...')
     #     os.system("taskkill /f /im calculator.exe")
@@ -71,9 +91,20 @@ def close_software(software_name):
         speak(f"I couldn't find any open software named {software_name}")
 
 
+def get_greeting():
+    if currentTime.hour < 12:
+        text='Good morning.'
+    elif 12 <= currentTime.hour < 18:
+        text='Good afternoon.'
+    else:
+        text='Good evening.'
+    return text + "sir, give password to help you"
+
 def listen_to_wake():
     with sr.Microphone() as source:
         print('Listening for wake word...')
+       # greeting = get_greeting()
+       # speak(greeting)
         while True:
             recognizer.adjust_for_ambient_noise(source, duration=0.5)
             recorded_audio = recognizer.listen(source)
@@ -82,7 +113,11 @@ def listen_to_wake():
                 text = text.lower()
                 if 'jarvis' in text:
                     print('Wake word detected!')
-                    speak('Welcome home sir, congratulations on unlocking...  How can I help you?')
+                    mp3_path="./assets/startup1.mp3"
+                    player = vlc.MediaPlayer(mp3_path)
+                    player.play()
+                    time.sleep(6.5) 
+                    # speak('Welcome home sir, congratulations on unlocking...  How can I help you?')
                     return True
             except Exception as ex:
                 print("Unable to understand the input, please try again!")
@@ -102,23 +137,89 @@ def cmd():
         print(ex)
         return
 
-    if 'stop' in text:
-        speak('Stopping the program. Goodbye!')
-        sys.exit()
+    # if len(text):
+    #     pyautogui.press('f10')
+    #     time.sleep(2)
+    #     pyautogui.press('f10')
+
     if 'open' in text:
         software_name = text.replace('open', '').strip()
         open_software(software_name)
+        
     elif 'close' in text:
         software_name = text.replace('close', '').strip()
         close_software(software_name)
+
+    elif 'stop youtube' in text:
+        print("pause youtube")
+        b='Pausing Youtube'
+        engine.say(b)
+        engine.runAndWait()
+        pyautogui.press("k")
+        
+    elif 'play youtube' in text:
+        print("play youtube")
+        b='Play Youtube'
+        engine.say(b)
+        engine.runAndWait()
+        pyautogui.press("k")
+
+    elif substring_in_list([ "remove full screen"], text):
+        print("full screen")
+        b='Changing the scree size'
+        engine.say(b)
+        engine.runAndWait()
+        pyautogui.press("f")
+
+    elif substring_in_list(["full screen",  "make full screen", "change screen size"], text):
+        print("full screen")
+        b='Changing the scree size'
+        engine.say(b)
+        engine.runAndWait()
+        pyautogui.press("f")
+
+    elif 'unmute' in text:
+        print("unmute")
+        b='Unmute Youtube'
+        engine.say(b)
+        engine.runAndWait()
+        pyautogui.press("m")
+
+    elif 'mute' in text:
+        print("mute")
+        b='Mute Youtube'
+        engine.say(b)
+        engine.runAndWait()
+        pyautogui.press("m")
+    
+    # elif 'volume up' in text:
+    #     print("volume up")
+    #     b='Volume Up'
+    #     engine.say(b)
+    #     engine.runAndWait()
+    #     pyautogui.press("up")
+
+    # elif 'volume down' in text:
+    #     print("volume down")
+    #     b='Volume Down'
+    #     engine.say(b)
+    #     engine.runAndWait()
+    #     pyautogui.press("down")
+
     elif 'time' in text:
         current_time = datetime.datetime.now().strftime('%I:%M %p')
         print(current_time)
         speak(current_time)
     elif 'who is god' in text:
-        speak('Ajitheyyy Kadavuleyy')
+        engine.setProperty('rate',150)
+        speak('Ajith yee Kadavul yee!!')
+        engine.setProperty('rate',200)
+
     elif 'what is your name' in text:
-        speak('My name is Jarvis Your Artificial Intelligence')
+        speak('I am Jarvis, I am your Artificial Intelligence')
+    elif substring_in_list(["turn off", "switch off", "off"], text):
+        speak('Turning off the program. Goodbye!')
+        sys.exit()
 
 
 # Main program (starting point)

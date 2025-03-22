@@ -2,9 +2,9 @@ import psutil
 import os
 
 # function to check if chrome is running
-def is_chrome_running():
+def is_app_running(app_name):
     for proc in psutil.process_iter():
-        if 'chrome' in proc.name():
+        if app_name in proc.name():
             return True
     return False
 
@@ -29,3 +29,11 @@ def close_app(app_name):
         print(app_name+" not found running")
     else:
         print(app_name+'('+sys_app+')'+' closed')
+
+def substring_in_list(matches, str):
+    given_str = str.lower()
+
+    if any(x in given_str for x in matches):
+        return True
+    else: 
+        return False
