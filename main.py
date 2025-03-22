@@ -152,42 +152,43 @@ def cmd():
 
     elif 'stop youtube' in text:
         print("pause youtube")
-        b='Pausing Youtube'
+        b=text or "Pause"
         engine.say(b)
         engine.runAndWait()
         pyautogui.press("k")
         
     elif 'play youtube' in text:
         print("play youtube")
-        b='Play Youtube'
+        b=text or 'Play Youtube'
         engine.say(b)
         engine.runAndWait()
         pyautogui.press("k")
 
     elif substring_in_list([ "remove full screen"], text):
         print("full screen")
-        b='Changing the scree size'
+        b=text or 'Changing the scree size'
         engine.say(b)
         engine.runAndWait()
         pyautogui.press("f")
 
     elif substring_in_list(["full screen",  "make full screen", "change screen size"], text):
         print("full screen")
-        b='Changing the scree size'
+        b=text or 'Changing the scree size'
         engine.say(b)
         engine.runAndWait()
         pyautogui.press("f")
 
     elif 'unmute' in text:
         print("unmute")
-        b='Unmute Youtube'
+        b=text or "Unmute"
         engine.say(b)
         engine.runAndWait()
         pyautogui.press("m")
 
     elif 'mute' in text:
         print("mute")
-        b='Mute Youtube'
+        b=text 
+
         engine.say(b)
         engine.runAndWait()
         pyautogui.press("m")
