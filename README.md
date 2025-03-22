@@ -8,6 +8,6 @@ wake word - Jarvis
 controls:
  1. Open app and play music
  2. Close app
-
+ 3. Play, Pause, Mute/Unmute, Fullscreen the youtube added
 to close app - Turn off or switch offs
 ```
