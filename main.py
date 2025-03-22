@@ -6,6 +6,7 @@ import subprocess
 import sys
 import pywhatkit 
 
+from helper import *
 
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
@@ -21,9 +22,15 @@ def speak(text):
 def open_software(software_name):
     if 'chrome' in software_name:
         speak('Opening Chrome...')
-        subprocess.call(["/usr/bin/open", "-W", "-n", "-a", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"])
-        # program = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-        # subprocess.Popen([program])
+        chrome_path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        if is_chrome_running():
+            speak('Chrome is already running!')
+            url = 'https://www.google.com'
+            subprocess.run(['open', '-a', 'Google Chrome', url])
+
+        else:
+            speak("New chrome opened!")
+            subprocess.Popen([chrome_path])
 
     # elif 'microsoft edge' in software_name:
     #     speak('Opening Microsoft Edge...')
@@ -48,7 +55,7 @@ def open_software(software_name):
 def close_software(software_name):
     if 'chrome' in software_name:
         speak('Closing Chrome...')
-        os.system("taskkill /f /im chrome.exe")
+        close_app('chrome')
 
     # elif 'microsoft edge' in software_name:
     #     speak('Closing Microsoft Edge...')
@@ -75,10 +82,10 @@ def listen_to_wake():
                 text = text.lower()
                 if 'jarvis' in text:
                     print('Wake word detected!')
-                    speak('Hi Sir, How can I help you?')
+                    speak('Welcome home sir, congratulations on unlocking...  How can I help you?')
                     return True
             except Exception as ex:
-                print("Could not understand audio, please try again.")
+                print("Unable to understand the input, please try again!")
 
 def cmd():
     with sr.Microphone() as source:
@@ -114,6 +121,7 @@ def cmd():
         speak('My name is Jarvis Your Artificial Intelligence')
 
 
+# Main program (starting point)
 while True:
     if listen_to_wake():
         while True:
